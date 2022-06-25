@@ -6,8 +6,6 @@ import (
 	"github.com/kaushal9900/banking-lib/logger"
 )
 
-const HMAC_SAMPLE_SECRET = "secretkey"
-
 type AuthToken struct {
 	token *jwt.Token
 }

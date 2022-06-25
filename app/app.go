@@ -20,6 +20,7 @@ func Start() {
 	ah := AuthHandler{service.NewLoginService(authRepo, domain.GetRolePermissions())}
 
 	router.HandleFunc("/auth/login", ah.Login).Methods(http.MethodPost)
+	router.HandleFunc("/auth/verify", ah.Verify).Methods(http.MethodGet)
 	address := os.Getenv("SERVER_ADDRESS")
 	port := os.Getenv("SERVER_PORT")
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", address, port), router))

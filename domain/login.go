@@ -8,8 +8,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-const ACCESS_TOKEN_DURATION = 50
-
 type Login struct {
 	Username   string         `db:"username"`
 	CustomerId sql.NullString `db:"customer_id"`

@@ -4,6 +4,7 @@ import (
 	"bankingAuth/dto"
 	"bankingAuth/service"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/kaushal9900/banking-lib/logger"
@@ -29,10 +30,40 @@ func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (h AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
+	urlParams := make(map[string]string)
+
+	for k, _ := range r.URL.Query() {
+		urlParams[k] = r.URL.Query().Get(k)
+	}
+	logger.Debug(fmt.Sprint(urlParams))
+	if urlParams["token"] != "" {
+		appError := h.service.Verify(urlParams)
+		if appError != nil {
+			writeResponse(w, http.StatusForbidden, notAuthorizedResponse(appError.Message))
+		} else {
+			writeResponse(w, http.StatusOK, authorizedResponse())
+		}
+	} else {
+		writeResponse(w, http.StatusForbidden, "Token is missing")
+	}
+
+}
 func writeResponse(w http.ResponseWriter, code int, data interface{}) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		panic(err)
 	}
+}
+
+func notAuthorizedResponse(msg string) map[string]interface{} {
+	return map[string]interface{}{
+		"isAuthorized": false,
+		"message":      msg,
+	}
+}
+
+func authorizedResponse() map[string]bool {
+	return map[string]bool{"isAuthorized": true}
 }
